@@ -39,43 +39,28 @@ def transform_json(old_json, interpretations):
         "KeyTermDefinitionRelated": []
     }
 
-    # Transform Per LPA section
-    for item in old_json.get("Per LPA", []):
-        found_in_pdf = not ("No Match Found" in item["text"])
-        interpretation_texts = []
-        for interp in interpretations:
-            for key, value in interp.items():
-                # Add each interpretation as a separate entry
-                interpretation_texts.append({key: value})
-
-        new_entry = {
+    # Function to create new entry
+    def create_new_entry(item, interpretation_text):
+        return {
             "Extracts": [item["text"]],
             "Metadata": {
                 "Page no": item.get("page_number", None),
-                "Found in pdf": found_in_pdf
+                "Found in pdf": not ("No Match Found" in item["text"])
             },
-            "Interpretation": interpretation_texts
+            "Interpretation": [interpretation_text]
         }
-        new_json["mfeesRelated"].append(new_entry)
+
+    # Transform Per LPA section
+    for item in old_json.get("Per LPA", []):
+        for interp in interpretations:
+            for key, value in interp.items():
+                new_json["mfeesRelated"].append(create_new_entry(item, {key: value}))
 
     # Transform Definitions section
     for item in old_json.get("DEFINITIONS", []):
-        found_in_pdf = not ("No Match Found" in item["text"])
-        interpretation_texts = []
         for interp in interpretations:
             for key, value in interp.items():
-                # Add each interpretation as a separate entry
-                interpretation_texts.append({key: value})
-
-        new_entry = {
-            "Extracts": [item["text"]],
-            "Metadata": {
-                "Page no": item.get("page_number", None),
-                "Found in pdf": found_in_pdf
-            },
-            "Interpretation": interpretation_texts
-        }
-        new_json["KeyTermDefinitionRelated"].append(new_entry)
+                new_json["KeyTermDefinitionRelated"].append(create_new_entry(item, {key: value}))
 
     return new_json
 

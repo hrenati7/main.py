@@ -45,9 +45,8 @@ def transform_json(old_json, interpretations):
         interpretation_texts = []
         for interp in interpretations:
             for key, value in interp.items():
-                # Match logic: check if the interpretation text appears in the item text
-                if value in item["text"]:
-                    interpretation_texts.append(value)
+                # Add each interpretation as a separate entry
+                interpretation_texts.append({key: value})
 
         new_entry = {
             "Extracts": [item["text"]],
@@ -65,9 +64,8 @@ def transform_json(old_json, interpretations):
         interpretation_texts = []
         for interp in interpretations:
             for key, value in interp.items():
-                # Match logic: check if the interpretation text appears in the item text
-                if value in item["text"]:
-                    interpretation_texts.append(value)
+                # Add each interpretation as a separate entry
+                interpretation_texts.append({key: value})
 
         new_entry = {
             "Extracts": [item["text"]],
